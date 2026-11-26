@@ -1,0 +1,15 @@
+{# The engine says the user has reached the level of confidence. That is all core front
+   knows: what the identity is made of is on the stub page that follows. #}
+{% extends "layout.njk" %}
+{% from "govuk/components/panel/macro.njk" import govukPanel %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page %}
+  {{ govukPanel({ titleText: view.title }) }}
+
+  <p class="govuk-body">{{ view.body }}</p>
+
+  <form action="{{ action }}" method="POST" novalidate>
+    {{ govukButton({ text: view.button, preventDoubleClick: true }) }}
+  </form>
+{% endblock %}

@@ -1,0 +1,10 @@
+{# There is no way left to reach the level of confidence. #}
+{% extends "layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page %}
+  <h1 class="govuk-heading-l">{{ view.title }}</h1>
+  <p class="govuk-body">{{ view.message }}</p>
+
+  {{ govukButton({ text: "Start again", href: "/" }) }}
+{% endblock %}

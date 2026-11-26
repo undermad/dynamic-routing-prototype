@@ -1,0 +1,51 @@
+{# Stands in for a credential issuer: says which one it is, and lets whoever is running the
+   journey pick the result it returns. Made to look unlike the pages of the service. #}
+{% extends "layout.njk" %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% block page %}
+  <div class="app-stub-banner">
+    <p class="govuk-body">
+      {{ govukTag({ text: view.tag, classes: "app-tag--stub" }) }}
+      {{ view.banner }}
+    </p>
+  </div>
+
+  <span class="govuk-caption-l">{{ view.caption }}</span>
+  <h1 class="govuk-heading-l">{{ view.title }}</h1>
+
+  {% set rows = [] %}
+  {% for fact in view.facts %}
+    {% set value = { html: "<code>" + fact[1] + "</code>" } if loop.first else { text: fact[1] } %}
+    {% set rows = (rows.push({ key: { text: fact[0] }, value: value }), rows) %}
+  {% endfor %}
+  {{ govukSummaryList({ rows: rows }) }}
+
+  {% set items = [] %}
+  {% for item in view.items %}
+    {% set label %}
+      {{ govukTag({
+        text: item.outcome,
+        classes: "app-tag--passed" if item.passed else "app-tag--failed"
+      }) }}
+      {{ item.label }}
+    {% endset %}
+    {% set items = (items.push({ value: item.value, html: label, hint: { text: item.detail } }), items) %}
+  {% endfor %}
+
+  <form action="{{ action }}" method="POST" novalidate>
+    {{ govukRadios({
+      idPrefix: "answer",
+      name: "answer",
+      fieldset: { legend: { text: view.question, classes: "govuk-fieldset__legend--m" } },
+      hint: { text: view.hint },
+      errorMessage: { text: error } if error,
+      items: items
+    }) }}
+
+    {{ govukButton({ text: view.button, preventDoubleClick: true }) }}
+  </form>
+{% endblock %}

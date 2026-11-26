@@ -1,0 +1,6 @@
+{# What the user told us before, shown above a question they are being asked again. #}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{% if view.reminder %}
+  {{ govukInsetText({ text: view.reminder }) }}
+{% endif %}

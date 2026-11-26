@@ -1,0 +1,20 @@
+{# What core front holds for this user, and its last exchange with the engine. Nothing here
+   comes from inside the engine: it is the session and what went over the wire. #}
+{% from "govuk/components/details/macro.njk" import govukDetails %}
+
+{% if journey %}
+  {% set engineView %}
+    <div class="app-engine-view">
+      <h3 class="govuk-heading-s">Core front session</h3>
+      <pre>{{ journey | json }}</pre>
+      {% if exchange %}
+        <h3 class="govuk-heading-s">Last request to the engine</h3>
+        <pre>{{ exchange.request | json }}</pre>
+        <h3 class="govuk-heading-s">What the engine answered</h3>
+        <pre>{{ exchange.result | json }}</pre>
+      {% endif %}
+    </div>
+  {% endset %}
+
+  {{ govukDetails({ summaryText: "What the engine was sent and what it answered", html: engineView }) }}
+{% endif %}

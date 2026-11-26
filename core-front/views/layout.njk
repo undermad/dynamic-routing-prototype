@@ -1,0 +1,82 @@
+{# Every page: the GOV.UK page template with the One Login header and footer. #}
+{% extends "govuk/template.njk" %}
+{% from "frontend-ui/build/components/header/macro.njk" import frontendUiHeader %}
+{% from "frontend-ui/build/components/footer/macro.njk" import frontendUiFooter %}
+{% from "govuk/components/phase-banner/macro.njk" import govukPhaseBanner %}
+{% from "govuk/components/error-summary/macro.njk" import govukErrorSummary %}
+{% from "govuk/components/notification-banner/macro.njk" import govukNotificationBanner %}
+
+{% set govukRebrand = true %}
+{% set assetPath = "/assets" %}
+
+{% block pageTitle %}{% if error %}Error: {% endif %}{{ view.title }} – GOV.UK One Login{% endblock %}
+
+{% block head %}
+  <link href="/govuk/govuk-frontend.min.css" rel="stylesheet">
+  <link href="/frontend-ui/all.css" rel="stylesheet">
+  <style>
+    .app-stub-banner { background: #fff7bf; border-left: 10px solid #ffdd00; padding: 15px 20px; margin-bottom: 30px; }
+    .app-stub-banner p { margin-bottom: 0; }
+    /* The One Login styles force every tag blue, so these have to insist. */
+    .app-tag--stub { color: #0b0c0c !important; background-color: #ffdd00 !important; }
+    .app-tag--passed { background-color: #00703c !important; }
+    .app-tag--failed { background-color: #d4351c !important; }
+    .app-engine-view pre { font-size: 14px; line-height: 1.4; overflow-x: auto; background: #f3f2f1; padding: 10px; }
+  </style>
+{% endblock %}
+
+{% block header %}
+  {{ frontendUiHeader({
+    translations: { ariaLabel: "Account", signOut: "Start again", signOutAriaLabel: "Start the journey again" },
+    homepageUrl: "/",
+    signOutLink: "/"
+  }) }}
+{% endblock %}
+
+{% block beforeContent %}
+  {{ govukPhaseBanner({
+    tag: { text: "Prototype" },
+    text: "This is a prototype of dynamic routing."
+  }) }}
+{% endblock %}
+
+{% block content %}
+  <div class="govuk-grid-row">
+    <div class="govuk-grid-column-two-thirds">
+      {% if error %}
+        {{ govukErrorSummary({
+          titleText: "There is a problem",
+          errorList: [{ text: error, href: "#field-0" if fieldErrors else "#answer" }]
+        }) }}
+      {% endif %}
+
+      {# The last check failed, and this is the first page the user sees since. #}
+      {% if notice %}
+        {{ govukNotificationBanner({ text: notice }) }}
+      {% endif %}
+
+      {% block page %}{% endblock %}
+    </div>
+  </div>
+
+  {% include "engine-view.njk" %}
+{% endblock %}
+
+{% block footer %}
+  {{ frontendUiFooter({
+    translations: {
+      navItemHiddenHeader: "Support links",
+      footerNavItems: [],
+      contentLicence: { html: "Dynamic IPV prototype. Sessions and credentials are kept in memory." },
+      copyright: { text: "© Crown copyright" }
+    }
+  }) }}
+{% endblock %}
+
+{% block bodyEnd %}
+  <script type="module" src="/govuk/govuk-frontend.min.js"></script>
+  <script type="module">
+    import { initAll } from '/govuk/govuk-frontend.min.js'
+    initAll()
+  </script>
+{% endblock %}

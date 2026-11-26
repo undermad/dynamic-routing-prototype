@@ -1,0 +1,54 @@
+{# The end of the journey, as a stub: what the user's credentials amount to, read from the
+   engine's identity stub endpoint. Made to look unlike the pages of the service. #}
+{% extends "layout.njk" %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/table/macro.njk" import govukTable %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/tag/macro.njk" import govukTag %}
+
+{% block page %}
+  {% set identity = view.identity %}
+
+  <div class="app-stub-banner">
+    <p class="govuk-body">
+      {{ govukTag({ text: view.tag, classes: "app-tag--stub" }) }}
+      {{ view.banner }}
+    </p>
+  </div>
+
+  <span class="govuk-caption-l">{{ view.caption }}</span>
+  <h1 class="govuk-heading-l">{{ view.title }}</h1>
+
+  {% set evidence = [] %}
+  {% for item in identity.scores.evidences %}
+    {% set evidence = (evidence.push(item.strength + "/" + item.validity), evidence) %}
+  {% endfor %}
+
+  <h2 class="govuk-heading-m">Scores</h2>
+  {{ govukSummaryList({
+    rows: [
+      { key: { text: "Strength / validity" }, value: { text: (evidence | join(", ")) or "none" } },
+      { key: { text: "Activity" }, value: { text: identity.scores.activity } },
+      { key: { text: "Fraud" }, value: { text: identity.scores.fraud } },
+      { key: { text: "Verification" }, value: { text: identity.scores.verification } }
+    ]
+  }) }}
+
+  {% set rows = [] %}
+  {% for credential in identity.credentials %}
+    {% set rows = (rows.push([
+      { text: credential.cri },
+      { text: credential.check },
+      { text: credential.document or "—" },
+      { text: "Passed" if credential.successful else "Failed" }
+    ]), rows) %}
+  {% endfor %}
+
+  <h2 class="govuk-heading-m">Credentials held in EVCS</h2>
+  {{ govukTable({
+    head: [{ text: "CRI" }, { text: "Check" }, { text: "Document" }, { text: "Result" }],
+    rows: rows
+  }) }}
+
+  {{ govukButton({ text: "Start again", href: "/" }) }}
+{% endblock %}

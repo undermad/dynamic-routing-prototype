@@ -1,0 +1,25 @@
+{# The last check failed. Says so, and shows where the engine is sending the user instead,
+   before they go there. #}
+{% extends "layout.njk" %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+{% from "govuk/components/summary-list/macro.njk" import govukSummaryList %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+
+{% block page %}
+  <h1 class="govuk-heading-l">{{ view.title }}</h1>
+
+  {{ govukInsetText({ text: view.returned }) }}
+
+  <p class="govuk-body">{{ view.body }}</p>
+
+  <h2 class="govuk-heading-m">{{ view.nextHeading }}</h2>
+  {% set rows = [] %}
+  {% for fact in view.facts %}
+    {% set rows = (rows.push({ key: { text: fact[0] }, value: { text: fact[1] } }), rows) %}
+  {% endfor %}
+  {{ govukSummaryList({ rows: rows }) }}
+
+  <form action="{{ action }}" method="POST" novalidate>
+    {{ govukButton({ text: view.button, preventDoubleClick: true }) }}
+  </form>
+{% endblock %}

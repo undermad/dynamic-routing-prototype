@@ -1,0 +1,43 @@
+{# One option from a list: yes or no, a triage choice, a way to prove an identity, a CRI stub result. #}
+{% extends "layout.njk" %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page %}
+  {% set items = [] %}
+  {% for item in view.items %}
+    {% set items = (items.push({
+      value: item.value,
+      text: item.text,
+      hint: { text: item.hint } if item.hint
+    }), items) %}
+  {% endfor %}
+  {% if view.lastResort %}
+    {% set items = (items.push({ divider: "or" }), items.push({
+      value: view.lastResort.value,
+      text: view.lastResort.text
+    }), items) %}
+  {% endif %}
+
+  {% set legend %}
+    {% if view.caption %}<span class="govuk-caption-l">{{ view.caption }}</span>{% endif %}
+    {{ view.title }}
+  {% endset %}
+
+  {% include "reminder.njk" %}
+
+  <form action="{{ action }}" method="POST" novalidate>
+    {{ govukRadios({
+      idPrefix: "answer",
+      name: "answer",
+      fieldset: {
+        legend: { html: legend, isPageHeading: true, classes: "govuk-fieldset__legend--l" }
+      },
+      hint: { text: view.hint } if view.hint,
+      errorMessage: { text: error } if error,
+      items: items
+    }) }}
+
+    {{ govukButton({ text: "Continue", preventDoubleClick: true }) }}
+  </form>
+{% endblock %}

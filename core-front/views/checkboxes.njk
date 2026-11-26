@@ -1,0 +1,33 @@
+{# Which of several documents the user has, or none of them. #}
+{% extends "layout.njk" %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page %}
+  {% set items = [] %}
+  {% for document in view.documents %}
+    {% set items = (items.push({ value: document, text: document }), items) %}
+  {% endfor %}
+  {% set items = (items.push({ divider: "or" }), items.push({
+    value: "none",
+    text: view.noneLabel,
+    behaviour: "exclusive"
+  }), items) %}
+
+  {% include "reminder.njk" %}
+
+  <form action="{{ action }}" method="POST" novalidate>
+    {{ govukCheckboxes({
+      idPrefix: "answer",
+      name: "documents",
+      fieldset: {
+        legend: { text: view.title, isPageHeading: true, classes: "govuk-fieldset__legend--l" }
+      },
+      hint: { text: view.hint },
+      errorMessage: { text: error } if error,
+      items: items
+    }) }}
+
+    {{ govukButton({ text: "Continue", preventDoubleClick: true }) }}
+  </form>
+{% endblock %}

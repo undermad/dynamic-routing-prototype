@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "cli": "npx tsx cli/simulator.ts",
+    "engine": "npx tsx engine/server.ts",
+    "web": "npx tsx core-front/app.ts"
+  },
+  "devDependencies": {
+    "@tsconfig/node22": "^22.0.5",
+    "@types/express": "^5.0.6",
+    "@types/express-session": "^1.19.0",
+    "@types/node": "^25.5.0",
+    "@types/nunjucks": "^3.2.6",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@govuk-one-login/frontend-ui": "^5.3.11",
+    "express": "^5.3.0",
+    "express-session": "^1.19.0",
+    "govuk-frontend": "^5.14.0",
+    "nunjucks": "^3.2.4"
+  }
+}

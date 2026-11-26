@@ -1,0 +1,55 @@
+{# Everything one way to prove an identity needs, asked on one page: a yes or no for a
+   single document or the phone, a list to tick for a choice of documents. #}
+{% extends "layout.njk" %}
+{% from "govuk/components/radios/macro.njk" import govukRadios %}
+{% from "govuk/components/checkboxes/macro.njk" import govukCheckboxes %}
+{% from "govuk/components/inset-text/macro.njk" import govukInsetText %}
+{% from "govuk/components/button/macro.njk" import govukButton %}
+
+{% block page %}
+  <h1 class="govuk-heading-l">{{ view.title }}</h1>
+  <p class="govuk-body">{{ view.intro }}</p>
+
+  <form action="{{ action }}" method="POST" novalidate>
+    {% for field in view.fields %}
+      {% set fieldError = fieldErrors[loop.index0] if fieldErrors %}
+
+      {% if field.reminder %}
+        {{ govukInsetText({ text: field.reminder }) }}
+      {% endif %}
+
+      {% if field.documents %}
+        {% set items = [] %}
+        {% for document in field.documents %}
+          {% set items = (items.push({ value: document, text: document }), items) %}
+        {% endfor %}
+        {% set items = (items.push({ divider: "or" }), items.push({
+          value: "none",
+          text: field.noneLabel,
+          behaviour: "exclusive"
+        }), items) %}
+
+        {{ govukCheckboxes({
+          idPrefix: field.name,
+          name: field.name,
+          fieldset: { legend: { text: field.title, classes: "govuk-fieldset__legend--m" } },
+          hint: { text: field.hint } if field.hint,
+          errorMessage: { text: fieldError } if fieldError,
+          items: items
+        }) }}
+      {% else %}
+        {{ govukRadios({
+          idPrefix: field.name,
+          name: field.name,
+          classes: "govuk-radios--inline",
+          fieldset: { legend: { text: field.title, classes: "govuk-fieldset__legend--m" } },
+          hint: { text: field.hint } if field.hint,
+          errorMessage: { text: fieldError } if fieldError,
+          items: [{ value: "yes", text: "Yes" }, { value: "no", text: "No" }]
+        }) }}
+      {% endif %}
+    {% endfor %}
+
+    {{ govukButton({ text: "Continue", preventDoubleClick: true }) }}
+  </form>
+{% endblock %}
